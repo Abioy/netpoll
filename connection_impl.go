@@ -271,6 +271,7 @@ func (c *connection) init(nfd *netFD, opt *options) (err error) {
 	if setZeroCopy(c.fd) == nil && setBlockZeroCopySend(c.fd, defaultZeroCopyTimeoutSec, 0) == nil {
 		c.supportZeroCopy = true
 	}
+	// OnPrepare must be executed at the end.
 	return c.initOptions(opt)
 }
 

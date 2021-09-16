@@ -80,6 +80,16 @@ type OnRequest func(ctx context.Context, connection Connection) error
 // so Reader() or Writer() cannot be used here, but may be supported in the future.
 type OnPrepare func(connection Connection) context.Context
 
+// TODO:
+// <0: force skip
+// >=0 && len >= needSize: exec OnRequest.
+type PreCheck func(ctx context.Context, detector Detector) (needSize int)
+
+type Detector interface {
+	Reader
+	Find(subStr string) (firstIndex int)
+}
+
 // NewEventLoop .
 func NewEventLoop(onRequest OnRequest, ops ...Option) (EventLoop, error) {
 	opt := &options{}

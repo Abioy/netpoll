@@ -50,6 +50,13 @@ func WithOnPrepare(onPrepare OnPrepare) Option {
 	}}
 }
 
+// WithPreCheck TODO:
+func WithPreCheck(precheck PreCheck) Option {
+	return Option{func(op *options) {
+		op.precheck = precheck
+	}}
+}
+
 // WithReadTimeout sets the read timeout of connections.
 func WithReadTimeout(timeout time.Duration) Option {
 	return Option{func(op *options) {
@@ -70,6 +77,7 @@ type Option struct {
 }
 
 type options struct {
+	precheck    PreCheck
 	onRequest   OnRequest
 	onPrepare   OnPrepare
 	readTimeout time.Duration
