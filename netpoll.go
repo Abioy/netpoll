@@ -83,7 +83,7 @@ type OnPrepare func(connection Connection) context.Context
 // TODO:
 // <0: force skip
 // >=0 && len >= needSize: exec OnRequest.
-type PreCheck func(ctx context.Context, detector Detector) (needSize int)
+type PreCheck func(ctx context.Context, detector Detector, connection Connection) (needSize int)
 
 type Detector interface {
 	Reader

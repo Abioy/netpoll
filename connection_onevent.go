@@ -110,7 +110,7 @@ func (c *connection) onRequest(inputSize int) (err error) {
 
 	// sync: pre-check
 	if c.precheck != nil {
-		c.needSize = c.precheck(c.ctx, c.inputBuffer)
+		c.needSize = c.precheck(c.ctx, c.inputBuffer, c)
 		if 0 <= c.needSize && c.needSize <= inputSize {
 			c.needSize = 0 // reset & go task
 		} else {
