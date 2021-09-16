@@ -47,6 +47,7 @@ type onEvent struct {
 	process   atomic.Value // value is OnRequest
 	callbacks atomic.Value // value is latest *callbackNode
 	precheck  PreCheck
+	needSize  int
 }
 
 type callbackNode struct {
@@ -95,18 +96,24 @@ func (c *connection) onPrepare(prepare OnPrepare) (err error) {
 
 // onRequest is also responsible for executing the callbacks after the connection has been closed.
 func (c *connection) onRequest(inputSize int) (err error) {
+	// size check
+	if c.needSize > inputSize {
+		return nil
+	}
+
 	var process = c.process.Load()
 	// Buffer has been fully processed, or task already exists
 	if process == nil || !c.lock(processing) {
 		c.triggerRead()
 		return nil
 	}
-	// lock processing with no trigger.
 
 	// sync: pre-check
 	if c.precheck != nil {
-		needSize := c.precheck(c.ctx, c.inputBuffer)
-		if needSize < 0 || inputSize < needSize {
+		c.needSize = c.precheck(c.ctx, c.inputBuffer)
+		if 0 <= c.needSize && c.needSize <= inputSize {
+			c.needSize = 0 // reset & go task
+		} else {
 			// FIXME: If you want to support `Async io.Closer` in all scenarios, the commented code here needs to be reopened.
 			//  The current implementation can only guarantee that no OnRequest is being executed.
 			// if !c.IsActive() {
