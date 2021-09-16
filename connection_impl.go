@@ -296,6 +296,7 @@ func (c *connection) initOptions(opt *options) error {
 	c.SetOnRequest(opt.onRequest)
 	c.SetReadTimeout(opt.readTimeout)
 	c.SetIdleTimeout(opt.idleTimeout)
+	c.precheck = opt.precheck
 	return c.onPrepare(opt.onPrepare)
 }
 
